@@ -1,0 +1,13 @@
+Полезные команды для проекта
+
+pip install PyQt5  устанавливаем PyQt5
+pip install PyQt5Designer  устанавливаем инструменты PyQt5
+pyuic5 main_window.ui -o design.py конвертируем наш UI в Python код
+
+
+pip install pypiwin32
+pip install pyinstaller собираем наш код в .exe приложение
+
+pyinstaller --onefile --icon=name.ico --noconsole main.py  команда для сборки
+- не забываем иконку, если будете копипастить без разбора
+ 
