@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets, QtGui
 import design
 import os
 import json
+from board import Board
 
 
 class MyApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
@@ -97,27 +98,37 @@ class MyApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         r, g, b = self.LcdRed.value(), self.LcdGreen.value(), self.LcdBlue.value()
         try:
             ba = bytearray((int(r), int(g), int(b), (1 if self.radioStatic.isChecked() else 0),
-              (1 if self.radioPulse.isChecked() else 0),
-              (1 if self.radioStrobe.isChecked() else 0),
-              int(self.TimeSlider.value())))
+                                                    (1 if self.radioPulse.isChecked() else 0),
+                                                    (1 if self.radioStrobe.isChecked() else 0),
+                                                    int(self.TimeSlider.value())))
             print(ba)
-            for b in ba:
-                print(b)
         except Exception as e:
             print(e)
 
     def submit_tab2(self):
         elems = (self.Pre1, self.Pre2, self.Pre3, self.Pre4, self.Pre5, self.Pre6, self.Pre7)
+        color_list = []
         color_seq = []
         for el in elems:
             try:
                 color = el.palette().color(QtGui.QPalette.Window)
                 color_tuple = color.getRgb()[:3]
-                color_seq.append(color_tuple)
+                color_list.append(color_tuple)
             except Exception as e:
                 print(e)
-        color_seq = tuple(color_seq)
-        print(color_seq)
+        for color_tuple in color_list:
+            for color in color_tuple:
+                color_seq.append(color)
+        try:
+            color_seq.extend(((1 if self.radioStatic.isChecked() else 0), (1 if self.radioPulse.isChecked() else 0),
+                                            (1 if self.radioStrobe.isChecked() else 0), int(self.TimeSlider.value())))
+            color_seq = tuple(color_seq)
+            ba = bytearray(color_seq)
+            print(ba)
+            arduino = Board('COM3', 9600)
+            arduino.write(ba)
+        except Exception as e:
+            print(e)
 
     def save_config(self):
         config_data = {}
